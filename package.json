@@ -10,8 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "docx": "^9.5.1",
+    "docxtemplater": "^3.67.6",
     "file-saver": "^2.0.5",
+    "pizzip": "^3.2.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
