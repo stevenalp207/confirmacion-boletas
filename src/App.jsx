@@ -69,6 +69,15 @@ function App() {
     localStorage.setItem('confirmacionBoletasList', JSON.stringify(boletasList))
   }, [boletasList])
 
+  // Constantes para validación y formato
+  const MONTHS_ES = [
+    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+  ]
+  
+  const ID_FIELDS = ['idCatequizando', 'idMadre', 'idPadre', 'idPadrino']
+  const NAME_FIELDS = ['nombre', 'nombreMadre', 'nombrePadre', 'nombrePadrino']
+
   // Función para formatear IDs (solo números y guiones)
   const formatID = (value) => {
     return value.replace(/[^0-9-]/g, '')
@@ -87,17 +96,11 @@ function App() {
   const formatDateToReadable = (dateStr) => {
     if (!dateStr) return ''
     
-    const months = [
-      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
-    ]
+    // Parse date components to avoid timezone issues
+    const [year, month, day] = dateStr.split('-').map(num => parseInt(num, 10))
+    const monthName = MONTHS_ES[month - 1]
     
-    const date = new Date(dateStr + 'T00:00:00')
-    const day = date.getDate()
-    const month = months[date.getMonth()]
-    const year = date.getFullYear()
-    
-    return `${day} de ${month} de ${year}`
+    return `${day} de ${monthName} de ${year}`
   }
 
   const handleChange = (e) => {
@@ -105,12 +108,12 @@ function App() {
     let formattedValue = value
 
     // Formatear IDs (solo números y guiones)
-    if (name.includes('id') || name.includes('Id')) {
+    if (ID_FIELDS.includes(name)) {
       formattedValue = formatID(value)
     }
 
     // Formatear nombres a Title Case
-    if (name.includes('nombre') || name.includes('Nombre')) {
+    if (NAME_FIELDS.includes(name)) {
       formattedValue = toTitleCase(value)
     }
 
@@ -205,13 +208,13 @@ function App() {
       // Si la fecha ya está en formato legible, intentar convertirla de vuelta
       const readableMatch = boleta.fechabautismo.match(/(\d+) de (\w+) de (\d{4})/)
       if (readableMatch) {
-        const months = {
+        const monthsMap = {
           'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04',
           'mayo': '05', 'junio': '06', 'julio': '07', 'agosto': '08',
           'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12'
         }
         const day = readableMatch[1].padStart(2, '0')
-        const month = months[readableMatch[2]]
+        const month = monthsMap[readableMatch[2]]
         const year = readableMatch[3]
         dateValue = `${year}-${month}-${day}`
       } else {
