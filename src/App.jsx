@@ -15,27 +15,27 @@ function App() {
       console.error('Error loading saved data:', error)
     }
     return {
-      // Datos del Confirmando (mapped to template variables)
-      nombre: '', // {nombre}
-      'id-catequizando': '', // {id-catequizando}
+      // Datos del Confirmando
+      nombre: '',
+      idCatequizando: '',
       
-      // Bautismo (mapped to template variables)
-      parroquia: '', // {parroquia}
-      libro: '', // {libro}
-      folio: '', // {folio}
-      asiento: '', // {asiento}
-      fechabautismo: '', // {fechabautismo}
+      // Bautismo
+      parroquia: '',
+      libro: '',
+      folio: '',
+      asiento: '',
+      fechabautismo: '',
       
-      // Padres (mapped to template variables)
-      'nombre-madre': '', // {nombre-madre}
-      'id-madre': '', // {id-madre}
-      'nombre-padre': '', // {nombre-padre}
-      'id-padre': '', // {id-padre}
+      // Padres
+      nombreMadre: '',
+      idMadre: '',
+      nombrePadre: '',
+      idPadre: '',
       
-      // Padrinos (mapped to template variables)
-      'nombre-padrino': '', // {nombre-padrino}
-      'id-padrino': '', // {id-padrino}
-      'parroquia-padrino': '', // {parroquia-padrino}
+      // Padrinos
+      nombrePadrino: '',
+      idPadrino: '',
+      parroquiaPadrino: '',
     }
   })
 
@@ -72,8 +72,26 @@ function App() {
         linebreaks: true,
       })
       
+      // Map camelCase properties to kebab-case template variables
+      const templateData = {
+        nombre: formData.nombre,
+        'id-catequizando': formData.idCatequizando,
+        parroquia: formData.parroquia,
+        libro: formData.libro,
+        folio: formData.folio,
+        asiento: formData.asiento,
+        fechabautismo: formData.fechabautismo,
+        'nombre-madre': formData.nombreMadre,
+        'id-madre': formData.idMadre,
+        'nombre-padre': formData.nombrePadre,
+        'id-padre': formData.idPadre,
+        'nombre-padrino': formData.nombrePadrino,
+        'id-padrino': formData.idPadrino,
+        'parroquia-padrino': formData.parroquiaPadrino,
+      }
+      
       // Set the data to fill in the template
-      doc.setData(formData)
+      doc.setData(templateData)
       
       // Render the document (replace all tags)
       doc.render()
@@ -133,8 +151,8 @@ function App() {
                 </label>
                 <input
                   type="text"
-                  name="id-catequizando"
-                  value={formData['id-catequizando']}
+                  name="idCatequizando"
+                  value={formData.idCatequizando}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   placeholder="Cédula o documento de identidad"
@@ -236,8 +254,8 @@ function App() {
                 </label>
                 <input
                   type="text"
-                  name="nombre-padre"
-                  value={formData['nombre-padre']}
+                  name="nombrePadre"
+                  value={formData.nombrePadre}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   placeholder="Nombre completo del padre"
@@ -249,8 +267,8 @@ function App() {
                 </label>
                 <input
                   type="text"
-                  name="id-padre"
-                  value={formData['id-padre']}
+                  name="idPadre"
+                  value={formData.idPadre}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   placeholder="ID del padre"
@@ -262,8 +280,8 @@ function App() {
                 </label>
                 <input
                   type="text"
-                  name="nombre-madre"
-                  value={formData['nombre-madre']}
+                  name="nombreMadre"
+                  value={formData.nombreMadre}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   placeholder="Nombre completo de la madre"
@@ -275,8 +293,8 @@ function App() {
                 </label>
                 <input
                   type="text"
-                  name="id-madre"
-                  value={formData['id-madre']}
+                  name="idMadre"
+                  value={formData.idMadre}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   placeholder="ID de la madre"
@@ -300,8 +318,8 @@ function App() {
                 </label>
                 <input
                   type="text"
-                  name="nombre-padrino"
-                  value={formData['nombre-padrino']}
+                  name="nombrePadrino"
+                  value={formData.nombrePadrino}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   placeholder="Nombre completo del padrino"
@@ -313,8 +331,8 @@ function App() {
                 </label>
                 <input
                   type="text"
-                  name="id-padrino"
-                  value={formData['id-padrino']}
+                  name="idPadrino"
+                  value={formData.idPadrino}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   placeholder="ID del padrino"
@@ -326,8 +344,8 @@ function App() {
                 </label>
                 <input
                   type="text"
-                  name="parroquia-padrino"
-                  value={formData['parroquia-padrino']}
+                  name="parroquiaPadrino"
+                  value={formData.parroquiaPadrino}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   placeholder="Parroquia del padrino"
@@ -355,7 +373,7 @@ function App() {
                   <p className="text-gray-700">
                     {formData.nombre || '[Nombre completo]'}
                   </p>
-                  {formData['id-catequizando'] && <p className="text-gray-600 text-xs">ID: {formData['id-catequizando']}</p>}
+                  {formData.idCatequizando && <p className="text-gray-600 text-xs">ID: {formData.idCatequizando}</p>}
                   
                   <p className="font-semibold text-blue-800 pt-2">Datos de Bautismo:</p>
                   <p className="text-gray-700 text-xs">
@@ -372,22 +390,22 @@ function App() {
                   
                   <p className="font-semibold text-blue-800 pt-2">Padres:</p>
                   <p className="text-gray-700 text-xs">
-                    Padre: {formData['nombre-padre'] || '[Nombre del Padre]'} 
-                    {formData['id-padre'] && ` (ID: ${formData['id-padre']})`}
+                    Padre: {formData.nombrePadre || '[Nombre del Padre]'} 
+                    {formData.idPadre && ` (ID: ${formData.idPadre})`}
                   </p>
                   <p className="text-gray-700 text-xs">
-                    Madre: {formData['nombre-madre'] || '[Nombre de la Madre]'}
-                    {formData['id-madre'] && ` (ID: ${formData['id-madre']})`}
+                    Madre: {formData.nombreMadre || '[Nombre de la Madre]'}
+                    {formData.idMadre && ` (ID: ${formData.idMadre})`}
                   </p>
                   
                   <p className="font-semibold text-blue-800 pt-2">Padrinos:</p>
                   <p className="text-gray-700 text-xs">
-                    Padrino: {formData['nombre-padrino'] || '[Nombre del Padrino]'}
-                    {formData['id-padrino'] && ` (ID: ${formData['id-padrino']})`}
+                    Padrino: {formData.nombrePadrino || '[Nombre del Padrino]'}
+                    {formData.idPadrino && ` (ID: ${formData.idPadrino})`}
                   </p>
-                  {formData['parroquia-padrino'] && (
+                  {formData.parroquiaPadrino && (
                     <p className="text-gray-700 text-xs">
-                      Parroquia del Padrino: {formData['parroquia-padrino']}
+                      Parroquia del Padrino: {formData.parroquiaPadrino}
                     </p>
                   )}
                 </div>
