@@ -91,7 +91,7 @@ function App() {
     if (!validateFormData()) return
 
     const newBoleta = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       nombre: formData.nombre,
       'id-catequizando': formData.idCatequizando,
       parroquia: formData.parroquia,
@@ -108,8 +108,11 @@ function App() {
       'parroquia-padrino': formData.parroquiaPadrino,
     }
 
-    setBoletasList(prev => [...prev, newBoleta])
-    setLastAddedIndex(boletasList.length)
+    setBoletasList(prev => {
+      const newList = [...prev, newBoleta]
+      setLastAddedIndex(newList.length - 1)
+      return newList
+    })
     
     // Limpiar formulario
     setFormData({
