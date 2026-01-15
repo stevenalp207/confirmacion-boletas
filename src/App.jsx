@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Docxtemplater from 'docxtemplater'
 import PizZip from 'pizzip'
 import { saveAs } from 'file-saver'
+import { Pencil } from 'lucide-react'
 
 function App() {
   // Cargar datos desde localStorage al inicializar el estado
@@ -55,6 +56,9 @@ function App() {
   // Estado para animación
   const [lastAddedIndex, setLastAddedIndex] = useState(null)
 
+  // Estado para edición
+  const [editingId, setEditingId] = useState(null)
+
   // Guardar en localStorage cuando cambian los datos del formulario
   useEffect(() => {
     localStorage.setItem('confirmacionBoletasData', JSON.stringify(formData))
@@ -65,11 +69,54 @@ function App() {
     localStorage.setItem('confirmacionBoletasList', JSON.stringify(boletasList))
   }, [boletasList])
 
+  // Función para formatear IDs (solo números y guiones)
+  const formatID = (value) => {
+    return value.replace(/[^0-9-]/g, '')
+  }
+
+  // Función para convertir texto a Title Case
+  const toTitleCase = (str) => {
+    return str
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
+  }
+
+  // Función para convertir fecha a formato legible
+  const formatDateToReadable = (dateStr) => {
+    if (!dateStr) return ''
+    
+    const months = [
+      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    ]
+    
+    const date = new Date(dateStr + 'T00:00:00')
+    const day = date.getDate()
+    const month = months[date.getMonth()]
+    const year = date.getFullYear()
+    
+    return `${day} de ${month} de ${year}`
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target
+    let formattedValue = value
+
+    // Formatear IDs (solo números y guiones)
+    if (name.includes('id') || name.includes('Id')) {
+      formattedValue = formatID(value)
+    }
+
+    // Formatear nombres a Title Case
+    if (name.includes('nombre') || name.includes('Nombre')) {
+      formattedValue = toTitleCase(value)
+    }
+
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: formattedValue
     }))
   }
 
@@ -86,19 +133,18 @@ function App() {
     return true
   }
 
-  // Añadir boleta a la lista
+  // Añadir boleta a la lista o actualizar existente
   const addToList = () => {
     if (!validateFormData()) return
 
-    const newBoleta = {
-      id: Date.now(),
+    const boletaData = {
       nombre: formData.nombre,
       'id-catequizando': formData.idCatequizando,
       parroquia: formData.parroquia,
       libro: formData.libro,
       folio: formData.folio,
       asiento: formData.asiento,
-      fechabautismo: formData.fechabautismo,
+      fechabautismo: formatDateToReadable(formData.fechabautismo),
       'nombre-madre': formData.nombreMadre,
       'id-madre': formData.idMadre,
       'nombre-padre': formData.nombrePadre,
@@ -108,10 +154,31 @@ function App() {
       'parroquia-padrino': formData.parroquiaPadrino,
     }
 
-    setBoletasList(prev => [...prev, newBoleta])
-    setLastAddedIndex(boletasList.length)
+    if (editingId !== null) {
+      // Actualizar boleta existente
+      setBoletasList(prev => prev.map(boleta => 
+        boleta.id === editingId ? { ...boletaData, id: editingId } : boleta
+      ))
+      setEditingId(null)
+    } else {
+      // Añadir nueva boleta
+      const newBoleta = {
+        id: Date.now(),
+        ...boletaData
+      }
+      setBoletasList(prev => [...prev, newBoleta])
+      setLastAddedIndex(boletasList.length)
+      
+      // Remover animación después de 1 segundo
+      setTimeout(() => setLastAddedIndex(null), 1000)
+    }
     
     // Limpiar formulario
+    clearForm()
+  }
+
+  // Limpiar formulario
+  const clearForm = () => {
     setFormData({
       nombre: '',
       idCatequizando: '',
@@ -128,9 +195,56 @@ function App() {
       idPadrino: '',
       parroquiaPadrino: '',
     })
+  }
 
-    // Remover animación después de 1 segundo
-    setTimeout(() => setLastAddedIndex(null), 1000)
+  // Editar boleta - cargar datos en el formulario
+  const editBoleta = (boleta) => {
+    // Convertir formato de fecha legible de vuelta a formato YYYY-MM-DD para el input
+    let dateValue = ''
+    if (boleta.fechabautismo) {
+      // Si la fecha ya está en formato legible, intentar convertirla de vuelta
+      const readableMatch = boleta.fechabautismo.match(/(\d+) de (\w+) de (\d{4})/)
+      if (readableMatch) {
+        const months = {
+          'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04',
+          'mayo': '05', 'junio': '06', 'julio': '07', 'agosto': '08',
+          'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12'
+        }
+        const day = readableMatch[1].padStart(2, '0')
+        const month = months[readableMatch[2]]
+        const year = readableMatch[3]
+        dateValue = `${year}-${month}-${day}`
+      } else {
+        dateValue = boleta.fechabautismo
+      }
+    }
+
+    setFormData({
+      nombre: boleta.nombre,
+      idCatequizando: boleta['id-catequizando'],
+      parroquia: boleta.parroquia,
+      libro: boleta.libro,
+      folio: boleta.folio,
+      asiento: boleta.asiento,
+      fechabautismo: dateValue,
+      nombreMadre: boleta['nombre-madre'],
+      idMadre: boleta['id-madre'],
+      nombrePadre: boleta['nombre-padre'],
+      idPadre: boleta['id-padre'],
+      nombrePadrino: boleta['nombre-padrino'],
+      idPadrino: boleta['id-padrino'],
+      parroquiaPadrino: boleta['parroquia-padrino'],
+    })
+    setEditingId(boleta.id)
+    
+    // Scroll al formulario
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  // Cancelar edición
+  const cancelEdit = () => {
+    clearForm()
+    setEditingId(null)
   }
 
   // Eliminar boleta de la lista
@@ -327,58 +441,70 @@ function App() {
               </svg>
               Información de Padres
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nombre del Padre
-                </label>
-                <input
-                  type="text"
-                  name="nombrePadre"
-                  value={formData.nombrePadre}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  placeholder="Nombre completo del padre"
-                />
+            
+            {/* Padre */}
+            <div className="bg-white rounded-lg p-4 mb-3 border-2 border-blue-200">
+              <h3 className="text-sm font-semibold text-blue-800 mb-3 uppercase tracking-wide">Padre</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nombre del Padre
+                  </label>
+                  <input
+                    type="text"
+                    name="nombrePadre"
+                    value={formData.nombrePadre}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    placeholder="Nombre completo del padre"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Identificación del Padre
+                  </label>
+                  <input
+                    type="text"
+                    name="idPadre"
+                    value={formData.idPadre}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    placeholder="ID del padre"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Identificación del Padre
-                </label>
-                <input
-                  type="text"
-                  name="idPadre"
-                  value={formData.idPadre}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  placeholder="ID del padre"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nombre de la Madre
-                </label>
-                <input
-                  type="text"
-                  name="nombreMadre"
-                  value={formData.nombreMadre}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  placeholder="Nombre completo de la madre"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Identificación de la Madre
-                </label>
-                <input
-                  type="text"
-                  name="idMadre"
-                  value={formData.idMadre}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  placeholder="ID de la madre"
-                />
+            </div>
+
+            {/* Madre */}
+            <div className="bg-white rounded-lg p-4 border-2 border-blue-200">
+              <h3 className="text-sm font-semibold text-blue-800 mb-3 uppercase tracking-wide">Madre</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nombre de la Madre
+                  </label>
+                  <input
+                    type="text"
+                    name="nombreMadre"
+                    value={formData.nombreMadre}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    placeholder="Nombre completo de la madre"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Identificación de la Madre
+                  </label>
+                  <input
+                    type="text"
+                    name="idMadre"
+                    value={formData.idMadre}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    placeholder="ID de la madre"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -391,32 +517,34 @@ function App() {
               </svg>
               Información de Padrinos
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nombre del Padrino
-                </label>
-                <input
-                  type="text"
-                  name="nombrePadrino"
-                  value={formData.nombrePadrino}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  placeholder="Nombre completo del padrino"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Identificación del Padrino
-                </label>
-                <input
-                  type="text"
-                  name="idPadrino"
-                  value={formData.idPadrino}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  placeholder="ID del padrino"
-                />
+            <div className="bg-white rounded-lg p-4 border-2 border-blue-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nombre del Padrino
+                  </label>
+                  <input
+                    type="text"
+                    name="nombrePadrino"
+                    value={formData.nombrePadrino}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    placeholder="Nombre completo del padrino"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Identificación del Padrino
+                  </label>
+                  <input
+                    type="text"
+                    name="idPadrino"
+                    value={formData.idPadrino}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    placeholder="ID del padrino"
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -434,17 +562,37 @@ function App() {
             </div>
           </div>
 
-          {/* Botón Añadir a la Lista */}
-          <div className="flex justify-center pt-4">
+          {/* Botones de acción */}
+          <div className="flex justify-center gap-4 pt-4">
             <button
               onClick={addToList}
-              className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-200 flex items-center space-x-2"
+              className={`${
+                editingId !== null
+                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800'
+                  : 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800'
+              } text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-200 flex items-center space-x-2`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                {editingId !== null ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                )}
               </svg>
-              <span>Añadir a la Lista</span>
+              <span>{editingId !== null ? 'Actualizar Registro' : 'Añadir a la Lista'}</span>
             </button>
+            
+            {editingId !== null && (
+              <button
+                onClick={cancelEdit}
+                className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-200 flex items-center space-x-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span>Cancelar Edición</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -484,21 +632,30 @@ function App() {
                     key={boleta.id}
                     className={`bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 border-2 border-blue-200 flex items-center justify-between transition-all duration-500 ${
                       lastAddedIndex === index ? 'animate-pulse scale-105' : ''
-                    }`}
+                    } ${editingId === boleta.id ? 'ring-2 ring-blue-500' : ''}`}
                   >
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-blue-900 truncate">{boleta.nombre}</p>
                       <p className="text-xs text-blue-600 truncate">ID: {boleta['id-catequizando']}</p>
                     </div>
-                    <button
-                      onClick={() => deleteBoleta(boleta.id)}
-                      className="ml-3 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transition duration-200 flex-shrink-0"
-                      title="Eliminar boleta"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
+                    <div className="flex items-center gap-2 ml-3 flex-shrink-0">
+                      <button
+                        onClick={() => editBoleta(boleta)}
+                        className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 transition duration-200"
+                        title="Editar boleta"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => deleteBoleta(boleta.id)}
+                        className="bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transition duration-200"
+                        title="Eliminar boleta"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
