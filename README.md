@@ -1,25 +1,23 @@
 # Generador de Boletas de Confirmación
 
-Una aplicación web moderna y elegante desarrollada con React y Tailwind CSS para automatizar la generación de boletas de confirmación parroquiales en formato Word (.docx).
+Una aplicación web moderna y elegante desarrollada con React y Tailwind CSS para automatizar la generación de boletas de confirmación parroquiales en formato Word (.docx) usando plantillas personalizables.
 
 ## Características
 
 - ✨ **Diseño Clean & Professional**: Esquema de colores institucional con azules profundos, blancos y grises suaves
 - 🎨 **UI Moderna**: Componentes inspirados en Shadcn/ui con bordes redondeados, sombras sutiles y tipografía Inter
 - 📝 **Formulario Completo**: Dividido en secciones lógicas:
-  - Datos de la Parroquia (Diócesis)
-  - Datos del Confirmando (Nombre, Apellido, Identificación, Fecha y Lugar de Nacimiento)
-  - Datos de Bautismo (Libro, Folio, Asiento, Fecha y Parroquia)
+  - Datos del Confirmando (Nombre completo e Identificación)
+  - Información de Bautismo (Libro, Folio, Asiento, Fecha y Parroquia)
   - Información de Padres (Nombres e Identificaciones)
-  - Información de Padrinos (Nombres e Identificaciones)
-- 👁️ **Previsualización en Vivo**: Vista previa que muestra cómo se verá la boleta final antes de descargar
+  - Información de Padrinos (Nombre, Identificación y Parroquia)
+- 👁️ **Previsualización en Vivo**: Vista previa que muestra los datos antes de generar el documento
 - 💾 **Persistencia Local**: Almacenamiento automático en localStorage (sin necesidad de base de datos)
-- 📄 **Documentos Profesionales**: Generación de archivos Word (.docx) con formato oficial:
-  - Encabezado con nombre de la parroquia y diócesis
-  - Título centrado "BOLETA DE CONFIRMACIÓN 2025"
-  - Secciones organizadas con bordes decorativos
-  - Pie de página con firma del párroco y fecha de emisión
-- 🔒 **Seguridad**: Sanitización de nombres de archivo y validación de entrada
+- 📄 **Sistema de Plantillas**: Usa plantillas Word personalizables con variables:
+  - Mapeo automático de datos del formulario a variables de la plantilla
+  - Soporte para plantillas profesionales con formato institucional
+  - Fácil personalización según las necesidades de cada parroquia
+- 🔒 **Seguridad**: Validación de entrada y manejo seguro de archivos
 - 📱 **Diseño Responsivo**: Adaptado para dispositivos móviles y escritorio
 
 ## Tecnologías Utilizadas
@@ -28,7 +26,8 @@ Una aplicación web moderna y elegante desarrollada con React y Tailwind CSS par
 - **Vite**: Herramienta de construcción rápida y moderna
 - **Tailwind CSS 4**: Framework CSS para estilos con utilidades
 - **Inter Font**: Tipografía moderna de Google Fonts
-- **docx**: Librería para generar documentos Word con formato profesional
+- **docxtemplater**: Librería para llenar plantillas Word con datos del formulario
+- **pizzip**: Manejo de archivos ZIP para procesar documentos .docx
 - **file-saver**: Para descargar archivos generados
 
 ## Instalación
@@ -50,6 +49,63 @@ cd confirmacion-boletas
 ```bash
 npm install
 ```
+
+3. **IMPORTANTE**: Agregar su plantilla Word:
+   - Coloque su archivo de plantilla `template.docx` en la carpeta `public/`
+   - La plantilla debe contener las variables especificadas (ver sección "Variables de la Plantilla")
+   - Consulte `public/TEMPLATE_README.md` para más detalles sobre cómo crear la plantilla
+
+## Variables de la Plantilla
+
+El sistema mapea los campos del formulario a estas variables en el archivo `template.docx`:
+
+| Variable | Descripción |
+|----------|-------------|
+| `{nombre}` | Nombre completo del confirmando |
+| `{id-catequizando}` | Cédula o documento de identidad del confirmando |
+| `{parroquia}` | Nombre de la parroquia de bautismo |
+| `{libro}` | Número del libro de bautismo |
+| `{folio}` | Número del folio de bautismo |
+| `{asiento}` | Número del asiento de bautismo |
+| `{fechabautismo}` | Fecha de bautismo |
+| `{nombre-madre}` | Nombre completo de la madre |
+| `{id-madre}` | Cédula o documento de identidad de la madre |
+| `{nombre-padre}` | Nombre completo del padre |
+| `{id-padre}` | Cédula o documento de identidad del padre |
+| `{nombre-padrino}` | Nombre completo del padrino |
+| `{id-padrino}` | Cédula o documento de identidad del padrino |
+| `{parroquia-padrino}` | Nombre de la parroquia del padrino |
+
+### Ejemplo de Plantilla
+
+Cree un documento Word con el siguiente contenido (puede personalizar el formato):
+
+```
+PARROQUIA INMACULADA CONCEPCIÓN
+BOLETA DE CONFIRMACIÓN 2025
+
+DATOS DEL CONFIRMANDO
+Nombre: {nombre}
+Identificación: {id-catequizando}
+
+DATOS DE BAUTISMO
+Libro: {libro} | Folio: {folio} | Asiento: {asiento}
+Fecha de Bautismo: {fechabautismo}
+Parroquia: {parroquia}
+
+INFORMACIÓN DE LOS PADRES
+Padre: {nombre-padre} (ID: {id-padre})
+Madre: {nombre-madre} (ID: {id-madre})
+
+INFORMACIÓN DE LOS PADRINOS
+Padrino: {nombre-padrino} (ID: {id-padrino})
+Parroquia del Padrino: {parroquia-padrino}
+
+_____________________________
+Firma del Párroco
+```
+
+Guarde este archivo como `template.docx` en la carpeta `public/`.
 
 ## Uso
 
@@ -83,59 +139,53 @@ npm run preview
 
 ## Cómo usar la aplicación
 
-1. **Complete el formulario**: Ingrese todos los datos requeridos en las cinco secciones:
-   - **Datos de la Parroquia**: Nombre de la diócesis
-   - **Datos del Confirmando**: Nombre, apellido, identificación, fecha y lugar de nacimiento
-   - **Datos de Bautismo**: Libro, folio, asiento, fecha y parroquia de bautismo
-   - **Padres**: Nombres completos e identificaciones del padre y la madre
-   - **Padrinos**: Nombres completos e identificaciones del padrino y la madrina
+1. **Preparar la plantilla**:
+   - Asegúrese de tener el archivo `template.docx` en la carpeta `public/`
+   - La plantilla debe contener las variables listadas arriba entre llaves `{}`
 
-2. **Guardado automático**: Los datos se guardan automáticamente en el navegador mientras escribe
+2. **Complete el formulario**: Ingrese todos los datos requeridos en las cuatro secciones:
+   - **Datos del Confirmando**: Nombre completo e identificación
+   - **Información de Bautismo**: Libro, folio, asiento, fecha y parroquia de bautismo
+   - **Información de Padres**: Nombres completos e identificaciones del padre y la madre
+   - **Información de Padrinos**: Nombre, identificación y parroquia del padrino
 
-3. **Previsualización**: Revise la vista previa de la boleta en la parte inferior del formulario
+3. **Guardado automático**: Los datos se guardan automáticamente en el navegador mientras escribe
 
-4. **Generar documento**: Haga clic en el botón "Generar Boleta en Word" para crear y descargar el documento .docx
+4. **Previsualización**: Revise la vista previa de los datos en la parte inferior del formulario
 
-5. **Documento generado**: El archivo Word se descargará automáticamente con un nombre basado en el nombre y apellido ingresados (ej: `boleta-confirmacion-Maria-Elena-Garcia-Rodriguez.docx`)
+5. **Generar documento**: Haga clic en el botón "Generar Boleta en Word" para crear y descargar el documento .docx
+
+6. **Documento generado**: El archivo Word se descargará automáticamente como `Boleta_Confirmacion_2025.docx` con todos los campos de la plantilla rellenados con los datos ingresados
 
 ## Formato del Documento Word
 
-El documento generado incluye:
+El documento generado usa su plantilla personalizada `template.docx` y rellena automáticamente todas las variables con los datos del formulario. El formato, estilo, colores, fuentes y estructura dependen completamente de su plantilla.
 
-- **Encabezado**: 
-  - Nombre de la parroquia: "PARROQUIA INMACULADA CONCEPCIÓN"
-  - Diócesis (personalizable)
-  - Bordes decorativos
-  
-- **Título Principal**: "BOLETA DE CONFIRMACIÓN 2025" (centrado y en negrita)
+### Ventajas del sistema de plantillas:
 
-- **Secciones de Datos**: 
-  - Datos del Confirmando (con identificación)
-  - Datos de Bautismo (libro, folio, asiento, fecha y parroquia)
-  - Datos de los Padres (nombres e identificaciones)
-  - Datos de los Padrinos (nombres e identificaciones)
-
-- **Pie de Página**:
-  - Fecha de emisión (formato largo: "15 de enero de 2026")
-  - Línea para firma del párroco
-  - Nombre de la parroquia
+- **Personalización total**: Defina el diseño exacto que necesita su parroquia
+- **Formato profesional**: Use todos los elementos de Word (tablas, imágenes, encabezados, pies de página, etc.)
+- **Fácil actualización**: Cambie la plantilla sin modificar el código de la aplicación
+- **Consistencia**: Mantenga el mismo formato en todos los documentos generados
 
 ## Estructura del proyecto
 
 ```
 confirmacion-boletas/
-├── public/          # Archivos estáticos
-│   └── vite.svg     # Ícono de Vite
+├── public/              # Archivos estáticos
+│   ├── vite.svg         # Ícono de Vite
+│   ├── template.docx    # Plantilla Word (debe ser agregada por el usuario)
+│   └── TEMPLATE_README.md  # Instrucciones para crear la plantilla
 ├── src/
-│   ├── App.jsx      # Componente principal con toda la lógica
-│   ├── main.jsx     # Punto de entrada de React
-│   ├── index.css    # Estilos globales con Tailwind e Inter font
-│   └── assets/      # Recursos adicionales
-├── index.html       # Template HTML con Inter font
-├── package.json     # Dependencias y scripts
-├── postcss.config.js   # Configuración de PostCSS
-├── vite.config.js   # Configuración de Vite
-└── eslint.config.js # Configuración de ESLint
+│   ├── App.jsx          # Componente principal con formulario y lógica
+│   ├── main.jsx         # Punto de entrada de React
+│   ├── index.css        # Estilos globales con Tailwind e Inter font
+│   └── assets/          # Recursos adicionales
+├── index.html           # Template HTML con Inter font
+├── package.json         # Dependencias y scripts
+├── postcss.config.js    # Configuración de PostCSS
+├── vite.config.js       # Configuración de Vite
+└── eslint.config.js     # Configuración de ESLint
 ```
 
 ## Comandos disponibles
@@ -149,11 +199,11 @@ npm run lint     # Ejecuta el linter ESLint
 
 ## Características de Seguridad
 
-- Sanitización de nombres de archivo para prevenir inyección de código
-- Manejo seguro de caracteres especiales en español (á, é, í, ó, ú, ñ)
+- Validación de entrada de datos
+- Manejo seguro de archivos Word mediante docxtemplater y pizzip
 - Sin dependencias de bases de datos externas
-- Almacenamiento local en el navegador del usuario
-- Sin vulnerabilidades detectadas en el análisis de CodeQL
+- Almacenamiento local seguro en el navegador del usuario
+- Error handling robusto para casos de plantilla faltante o corrupta
 
 ## Licencia
 
