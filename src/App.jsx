@@ -5,9 +5,13 @@ import { saveAs } from 'file-saver'
 function App() {
   // Cargar datos desde localStorage al inicializar el estado
   const [formData, setFormData] = useState(() => {
-    const savedData = localStorage.getItem('confirmacionBoletasData')
-    if (savedData) {
-      return JSON.parse(savedData)
+    try {
+      const savedData = localStorage.getItem('confirmacionBoletasData')
+      if (savedData) {
+        return JSON.parse(savedData)
+      }
+    } catch (error) {
+      console.error('Error loading saved data:', error)
     }
     return {
       // Datos Personales
@@ -47,6 +51,17 @@ function App() {
   }
 
   const generateDocument = async () => {
+    // Sanitizar el nombre del archivo para evitar problemas de seguridad
+    const sanitizeFilename = (str) => {
+      return str
+        .replace(/[^a-zA-Z0-9áéíóúñÁÉÍÓÚÑ\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .substring(0, 50)
+    }
+    
+    const safeNombre = sanitizeFilename(formData.nombre || 'documento')
+    const safeApellido = sanitizeFilename(formData.apellido || 'confirmacion')
+    
     const doc = new Document({
       sections: [{
         properties: {},
@@ -257,7 +272,7 @@ function App() {
     })
 
     const blob = await Packer.toBlob(doc)
-    saveAs(blob, `boleta-confirmacion-${formData.nombre}-${formData.apellido}.docx`)
+    saveAs(blob, `boleta-confirmacion-${safeNombre}-${safeApellido}.docx`)
   }
 
   return (
