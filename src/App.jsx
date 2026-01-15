@@ -21,6 +21,9 @@ function App() {
       fechaNacimiento: '',
       lugarNacimiento: '',
       
+      // Datos Parroquiales
+      diocesis: '',
+      
       // Bautismo
       libroBautismo: '',
       folioBautismo: '',
@@ -89,7 +92,7 @@ function App() {
             spacing: { after: 200 },
             children: [
               new TextRun({
-                text: 'Diócesis de [NOMBRE DE LA DIÓCESIS]',
+                text: `Diócesis de ${formData.diocesis || '[Nombre de la Diócesis]'}`,
                 size: 22,
                 color: '3b82f6',
               }),
@@ -420,6 +423,29 @@ function App() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8 space-y-8">
+          {/* Datos Parroquiales */}
+          <div className="bg-gradient-to-r from-blue-900 to-blue-800 rounded-xl p-6 text-white">
+            <h2 className="text-2xl font-semibold mb-4 flex items-center">
+              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              Datos de la Parroquia
+            </h2>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Nombre de la Diócesis
+              </label>
+              <input
+                type="text"
+                name="diocesis"
+                value={formData.diocesis}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-white focus:border-transparent outline-none transition text-gray-900"
+                placeholder="Ej: Caracas, Valencia, Maracaibo..."
+              />
+            </div>
+          </div>
+
           {/* Datos Personales */}
           <div className="bg-blue-50 rounded-xl p-6">
             <h2 className="text-2xl font-semibold text-blue-900 mb-4 flex items-center">
@@ -714,7 +740,9 @@ function App() {
             <div className="bg-white rounded-lg p-6 shadow-inner">
               <div className="text-center space-y-3">
                 <p className="text-sm font-bold text-blue-900">PARROQUIA INMACULADA CONCEPCIÓN</p>
-                <p className="text-xs text-blue-600">Diócesis de [NOMBRE DE LA DIÓCESIS]</p>
+                <p className="text-xs text-blue-600">
+                  Diócesis de {formData.diocesis || '[Nombre de la Diócesis]'}
+                </p>
                 <div className="border-t-2 border-blue-300 my-3"></div>
                 <p className="text-lg font-bold text-blue-900">BOLETA DE CONFIRMACIÓN 2025</p>
                 <div className="border-t-2 border-blue-300 my-3"></div>
