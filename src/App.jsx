@@ -17,6 +17,7 @@ function App() {
       // Datos Personales
       nombre: '',
       apellido: '',
+      identificacion: '',
       fechaNacimiento: '',
       lugarNacimiento: '',
       
@@ -29,11 +30,15 @@ function App() {
       
       // Padres
       nombrePadre: '',
+      idPadre: '',
       nombreMadre: '',
+      idMadre: '',
       
       // Padrinos
       nombrePadrino: '',
+      idPadrino: '',
       nombreMadrina: '',
+      idMadrina: '',
     }
   })
 
@@ -66,14 +71,51 @@ function App() {
       sections: [{
         properties: {},
         children: [
+          // Header - Parish Name
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
+            children: [
+              new TextRun({
+                text: 'PARROQUIA INMACULADA CONCEPCIÓN',
+                bold: true,
+                size: 28,
+                color: '1e40af',
+              }),
+            ],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
+            children: [
+              new TextRun({
+                text: 'Diócesis de [NOMBRE DE LA DIÓCESIS]',
+                size: 22,
+                color: '3b82f6',
+              }),
+            ],
+          }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { after: 400 },
             children: [
               new TextRun({
-                text: 'BOLETA DE CONFIRMACIÓN',
+                text: '═══════════════════════════════════════',
+                size: 24,
+                color: '3b82f6',
+              }),
+            ],
+          }),
+          
+          // Main Title
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 400 },
+            children: [
+              new TextRun({
+                text: 'BOLETA DE CONFIRMACIÓN 2025',
                 bold: true,
-                size: 32,
+                size: 36,
                 color: '1e40af',
               }),
             ],
@@ -83,8 +125,9 @@ function App() {
             spacing: { after: 600 },
             children: [
               new TextRun({
-                text: '___________________________',
+                text: '═══════════════════════════════════════',
                 size: 24,
+                color: '3b82f6',
               }),
             ],
           }),
@@ -95,7 +138,7 @@ function App() {
             spacing: { before: 300, after: 200 },
             children: [
               new TextRun({
-                text: 'DATOS PERSONALES',
+                text: 'DATOS DEL CONFIRMANDO',
                 bold: true,
                 size: 28,
                 color: '2563eb',
@@ -108,6 +151,16 @@ function App() {
             children: [
               new TextRun({
                 text: `Nombre completo: ${formData.nombre} ${formData.apellido}`,
+                size: 24,
+              }),
+            ],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
+            children: [
+              new TextRun({
+                text: `Identificación: ${formData.identificacion}`,
                 size: 24,
               }),
             ],
@@ -183,7 +236,7 @@ function App() {
             spacing: { before: 300, after: 200 },
             children: [
               new TextRun({
-                text: 'PADRES',
+                text: 'DATOS DE LOS PADRES',
                 bold: true,
                 size: 28,
                 color: '2563eb',
@@ -202,10 +255,30 @@ function App() {
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
-            spacing: { after: 400 },
+            spacing: { after: 200 },
+            children: [
+              new TextRun({
+                text: `ID: ${formData.idPadre}`,
+                size: 24,
+              }),
+            ],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
             children: [
               new TextRun({
                 text: `Madre: ${formData.nombreMadre}`,
+                size: 24,
+              }),
+            ],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 400 },
+            children: [
+              new TextRun({
+                text: `ID: ${formData.idMadre}`,
                 size: 24,
               }),
             ],
@@ -217,7 +290,7 @@ function App() {
             spacing: { before: 300, after: 200 },
             children: [
               new TextRun({
-                text: 'PADRINOS',
+                text: 'DATOS DE LOS PADRINOS',
                 bold: true,
                 size: 28,
                 color: '2563eb',
@@ -236,10 +309,30 @@ function App() {
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
-            spacing: { after: 400 },
+            spacing: { after: 200 },
+            children: [
+              new TextRun({
+                text: `ID: ${formData.idPadrino}`,
+                size: 24,
+              }),
+            ],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
             children: [
               new TextRun({
                 text: `Madrina: ${formData.nombreMadrina}`,
+                size: 24,
+              }),
+            ],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 600 },
+            children: [
+              new TextRun({
+                text: `ID: ${formData.idMadrina}`,
                 size: 24,
               }),
             ],
@@ -251,19 +344,58 @@ function App() {
             spacing: { before: 600 },
             children: [
               new TextRun({
-                text: '___________________________',
+                text: '═══════════════════════════════════════',
+                size: 24,
+                color: '3b82f6',
+              }),
+            ],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 300, after: 400 },
+            children: [
+              new TextRun({
+                text: `Fecha de emisión: ${new Date().toLocaleDateString('es-ES', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}`,
+                size: 22,
+                italics: true,
+                color: '6b7280',
+              }),
+            ],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 400, after: 200 },
+            children: [
+              new TextRun({
+                text: '________________________________',
                 size: 24,
               }),
             ],
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
-            spacing: { before: 200 },
+            spacing: { after: 200 },
             children: [
               new TextRun({
-                text: `Fecha de emisión: ${new Date().toLocaleDateString('es-ES')}`,
+                text: 'Firma del Párroco',
+                size: 22,
+                bold: true,
+              }),
+            ],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 400 },
+            children: [
+              new TextRun({
+                text: 'Parroquia Inmaculada Concepción',
                 size: 20,
                 italics: true,
+                color: '6b7280',
               }),
             ],
           }),
@@ -294,7 +426,7 @@ function App() {
               <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              Datos Personales
+              Datos del Confirmando
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -325,6 +457,19 @@ function App() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Identificación
+                </label>
+                <input
+                  type="text"
+                  name="identificacion"
+                  value={formData.identificacion}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  placeholder="123456789"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Fecha de Nacimiento
                 </label>
                 <input
@@ -335,7 +480,7 @@ function App() {
                   className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                 />
               </div>
-              <div>
+              <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Lugar de Nacimiento
                 </label>
@@ -453,6 +598,19 @@ function App() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Identificación del Padre
+                </label>
+                <input
+                  type="text"
+                  name="idPadre"
+                  value={formData.idPadre}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  placeholder="ID del padre"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Nombre de la Madre
                 </label>
                 <input
@@ -462,6 +620,19 @@ function App() {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   placeholder="Nombre completo de la madre"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Identificación de la Madre
+                </label>
+                <input
+                  type="text"
+                  name="idMadre"
+                  value={formData.idMadre}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  placeholder="ID de la madre"
                 />
               </div>
             </div>
@@ -491,6 +662,19 @@ function App() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Identificación del Padrino
+                </label>
+                <input
+                  type="text"
+                  name="idPadrino"
+                  value={formData.idPadrino}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  placeholder="ID del padrino"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Nombre de la Madrina
                 </label>
                 <input
@@ -502,7 +686,86 @@ function App() {
                   placeholder="Nombre completo de la madrina"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Identificación de la Madrina
+                </label>
+                <input
+                  type="text"
+                  name="idMadrina"
+                  value={formData.idMadrina}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  placeholder="ID de la madrina"
+                />
+              </div>
             </div>
+          </div>
+
+          {/* Preview Card */}
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border-2 border-blue-200">
+            <h2 className="text-2xl font-semibold text-blue-900 mb-4 flex items-center">
+              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              Previsualización de la Boleta
+            </h2>
+            <div className="bg-white rounded-lg p-6 shadow-inner">
+              <div className="text-center space-y-3">
+                <p className="text-sm font-bold text-blue-900">PARROQUIA INMACULADA CONCEPCIÓN</p>
+                <p className="text-xs text-blue-600">Diócesis de [NOMBRE DE LA DIÓCESIS]</p>
+                <div className="border-t-2 border-blue-300 my-3"></div>
+                <p className="text-lg font-bold text-blue-900">BOLETA DE CONFIRMACIÓN 2025</p>
+                <div className="border-t-2 border-blue-300 my-3"></div>
+                
+                <div className="text-left space-y-2 text-sm mt-4">
+                  <p className="font-semibold text-blue-800">Datos del Confirmando:</p>
+                  <p className="text-gray-700">
+                    {formData.nombre || '[Nombre]'} {formData.apellido || '[Apellido]'}
+                  </p>
+                  {formData.identificacion && <p className="text-gray-600 text-xs">ID: {formData.identificacion}</p>}
+                  
+                  <p className="font-semibold text-blue-800 pt-2">Datos de Bautismo:</p>
+                  <p className="text-gray-700 text-xs">
+                    Libro: {formData.libroBautismo || '[Libro]'} | 
+                    Folio: {formData.folioBautismo || '[Folio]'} | 
+                    Asiento: {formData.asientoBautismo || '[Asiento]'}
+                  </p>
+                  <p className="text-gray-700 text-xs">
+                    Parroquia: {formData.parroquiaBautismo || '[Parroquia de Bautismo]'}
+                  </p>
+                  
+                  <p className="font-semibold text-blue-800 pt-2">Padres:</p>
+                  <p className="text-gray-700 text-xs">
+                    Padre: {formData.nombrePadre || '[Nombre del Padre]'}
+                  </p>
+                  <p className="text-gray-700 text-xs">
+                    Madre: {formData.nombreMadre || '[Nombre de la Madre]'}
+                  </p>
+                  
+                  <p className="font-semibold text-blue-800 pt-2">Padrinos:</p>
+                  <p className="text-gray-700 text-xs">
+                    Padrino: {formData.nombrePadrino || '[Nombre del Padrino]'}
+                  </p>
+                  <p className="text-gray-700 text-xs">
+                    Madrina: {formData.nombreMadrina || '[Nombre de la Madrina]'}
+                  </p>
+                </div>
+                
+                <div className="border-t-2 border-blue-300 my-3"></div>
+                <p className="text-xs text-gray-500 italic">
+                  Fecha de emisión: {new Date().toLocaleDateString('es-ES', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-blue-700 mt-3 text-center">
+              Esta es una vista previa simplificada. El documento Word contendrá el formato completo.
+            </p>
           </div>
 
           {/* Botón Generar */}
