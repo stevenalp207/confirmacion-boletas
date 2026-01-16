@@ -3,6 +3,7 @@ import Docxtemplater from 'docxtemplater'
 import PizZip from 'pizzip'
 import { saveAs } from 'file-saver'
 import { Pencil } from 'lucide-react'
+import logo from './assets/logo.png'
 
 function App() {
   // Cargar datos desde localStorage al inicializar el estado
@@ -305,6 +306,7 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
+          <img src={logo} alt="Logo" className="h-40 mx-auto mb-4" />
           <h1 className="text-4xl font-bold text-blue-900 mb-2">
             Generador de Boletas de Confirmación
           </h1>
